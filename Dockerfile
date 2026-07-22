@@ -14,5 +14,10 @@ COPY . .
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 ENV HOME=/home/appuser
+
+
+
+# streamlit añade al path el dir del script (src/), no el del proyecto: sin esto falla `import src.*`
+ENV PYTHONPATH=/app
 EXPOSE 8501
 CMD ["streamlit", "run", "src/app.py", "--server.address=0.0.0.0"]
