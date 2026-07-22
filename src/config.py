@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     groq_api_key: str = ""
+    openai_api_key: str = ""
     llm_provider: str = "groq"
     llm_model: str = "llama-3.1-8b-instant"
     embedding_model: str = "paraphrase-multilingual-MiniLM-L12-v2"
