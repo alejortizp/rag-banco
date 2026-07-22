@@ -33,3 +33,21 @@ def test_elimina_contenido_oculto():
     html = '<html><body><p>visible</p><div style="display: none">{}</div><span hidden>secreto</span></body></html>'
     doc = HtmlCleaner().clean_html(html, url="http://x.co")
     assert "visible" in doc["text"] and "{}" not in doc["text"] and "secreto" not in doc["text"]
+
+def test_elimina_contenido_oculto_anidado_sin_error():
+    """Reproduce patrón real (Bancolombia /personas/seguros): un div oculto
+    contiene otro div oculto. Al decomponer el padre, bs4 limpia el __dict__
+    de los hijos (incluidos los que ya estaban en la lista de find_all(style=True)),
+    dejando tag.attrs en None. Iterar y hacer tag["style"] sobre ese hijo
+    "zombie" lanzaba TypeError: 'NoneType' object is not subscriptable."""
+    from src.scraping.cleaner import HtmlCleaner
+    html = (
+        '<html><body><p>visible</p>'
+        '<div class="outer" style="display: none;">'
+        '<div class="inner" style="display: none;">oculto anidado</div>'
+        '</div>'
+        '</body></html>'
+    )
+    doc = HtmlCleaner().clean_html(html, url="http://x.co")
+    assert "visible" in doc["text"]
+    assert "oculto anidado" not in doc["text"]
