@@ -220,7 +220,7 @@ Esto da una idea de qué está preguntando la gente y con qué intensidad se usa
 rag-banco/
 ├── docker-compose.yml
 ├── Dockerfile
-├── requirements.txt
+├── pyproject.toml + uv.lock    # dependencias (gestionadas con uv)
 ├── .env.example
 ├── pytest.ini
 ├── README.md
@@ -257,11 +257,9 @@ rag-banco/
 Los tests **no están incluidos en la imagen Docker** (excluidos deliberadamente vía `.dockerignore`, junto con `.venv`, `.git*`, `*.md`, datos crudos/procesados y la base de conversaciones) para mantener la imagen de producción liviana. Se corren en un entorno local:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate        # En Windows: .venv\Scripts\activate
-
-pip install -r requirements.txt
-pytest
+# Requiere uv (https://docs.astral.sh/uv/): curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync                          # crea .venv con Python 3.11 y las versiones exactas del lockfile
+uv run pytest
 ```
 
 `pytest.ini` fija `pythonpath = .`, así que los tests importan `src` y `scripts` correctamente sin instalar el proyecto como paquete. Cobertura actual: 27 tests sobre chunking, cleaner, config, history, llm, pipeline, retriever y analytics.
