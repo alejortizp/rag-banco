@@ -18,7 +18,16 @@ class HtmlCleaner:
             tag.decompose()
         # Remove hidden DOM elements
         for tag in soup.find_all(style=True):
-            if "display:none" in tag["style"].replace(" ", ""):
+            # find_all() snapshots matches before this loop runs. When a
+            # match contains a nested match (e.g. a hidden <div> wrapping
+            # another hidden <div>, as seen on real Bancolombia pages),
+            # decomposing the outer tag recursively clears the inner tag's
+            # __dict__ too (bs4 Tag.decompose()), leaving tag.attrs == None
+            # for that already-processed-by-cascade descendant. Skip it.
+            if tag.decomposed or not tag.attrs:
+                continue
+            style = tag.attrs.get("style")
+            if isinstance(style, str) and "display:none" in style.replace(" ", ""):
                 tag.decompose()
         for tag in soup.find_all(hidden=True):
             tag.decompose()
