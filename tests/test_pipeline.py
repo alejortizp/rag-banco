@@ -46,3 +46,8 @@ def test_error_del_llm_no_revienta_y_se_persiste(tmp_path):
     out = p.answer("s1", "hola")
     assert "error" in out["answer"].lower()
     assert len(p.history.get_last_n("s1", 10)) == 2
+
+def test_error_del_llm_no_filtra_detalles_internos(tmp_path):
+    p = _pipeline(tmp_path, FailingLLM())
+    out = p.answer("s1", "hola")
+    assert "api caida" not in out["answer"]  # el detalle interno no llega al usuario

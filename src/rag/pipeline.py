@@ -1,7 +1,10 @@
+import logging
 from src.config import get_settings
 from src.rag.retriever import Retriever
 from src.rag.llm import BaseLLM
 from src.memory.history import ConversationRepository
+
+logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = (
     "Eres un asistente del banco. Responde SOLO con base en el contexto proporcionado. "
@@ -25,7 +28,8 @@ class RAGPipeline:
         try:
             answer = self.llm.chat(messages)
         except Exception as e:
-            answer = f"Lo siento, ocurrió un error consultando el modelo: {e}"
+            logger.exception("Fallo consultando el LLM para session_id=%s", session_id)
+            answer = "Lo siento, ocurrió un error consultando el modelo. Por favor intenta de nuevo."
         self.history.add_message(session_id, "user", question)
         self.history.add_message(session_id, "assistant", answer)
-        return {"answer": answer, "sources": [h["url"] for h in hits]}
+        return {"answer": answer, "sources": list(dict.fromkeys(h["url"] for h in hits))}
