@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 from src.config import get_settings
 from src.indexing.chunking import FixedSizeChunking
@@ -7,7 +8,11 @@ from src.indexing.vector_store import QdrantVectorStore
 
 if __name__ == "__main__":
     s = get_settings()
-    docs = [json.loads(l) for l in Path("data/processed/documents.jsonl").read_text(encoding="utf-8").splitlines()]
+    documents_path = Path("data/processed/documents.jsonl")
+    if not documents_path.exists():
+        print("No hay documentos procesados. Ejecuta primero: python -m scripts.run_scraper")
+        sys.exit(1)
+    docs = [json.loads(l) for l in documents_path.read_text(encoding="utf-8").splitlines()]
     strategy = FixedSizeChunking(s.chunk_size, s.chunk_overlap)
     chunks = [c for d in docs for c in strategy.chunk(d)]
     embedder = Embedder()

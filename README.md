@@ -93,6 +93,8 @@ cp .env.example .env
 docker compose up --build -d
 ```
 
+Este único comando levanta todos los servicios (app + Qdrant); los scripts de scraping/indexado (pasos 6 y 7) son pasos de ingesta offline deliberadamente separados, no se ejecutan automáticamente al levantar el compose.
+
 El primer build tarda porque instala `torch` (CPU-only) y predescarga los modelos de `sentence-transformers` (embeddings multilingües + cross-encoder reranker) dentro de la imagen, para que el contenedor arranque sin depender de red hacia Hugging Face. Builds siguientes son mucho más rápidos por el cacheo de capas de Docker.
 
 ```bash
@@ -134,6 +136,15 @@ LLM_MODEL=<modelo servido por tu Ollama>
 ```
 
 Esto requiere correr un servicio Ollama accesible en la red de Docker Compose bajo el nombre de host `ollama` (puerto `11434`); **no está incluido en `docker-compose.yml`** por defecto — habría que añadir el servicio y ajustar `depends_on` en `app`. Se documenta como opción, no como parte del entregable base.
+
+### Apagar el sistema
+
+```bash
+docker compose down       # detiene los contenedores, conserva los datos (volumen de Qdrant)
+docker compose down -v    # además borra el índice de Qdrant (hay que reindexar después)
+```
+
+Con `docker compose down -v` se pierde únicamente el volumen de Qdrant (los vectores indexados); los datos scrapeados (`./data/raw`, `./data/processed`) y el historial de conversaciones (`conversations.db`) sobreviven porque están montados como bind mounts en `./data`, fuera del volumen gestionado por Compose.
 
 ## Uso de la interfaz
 
@@ -253,6 +264,7 @@ pytest
 - **`ParagraphChunking` no está en uso**: existe como estrategia alternativa (patrón Strategy) pero el pipeline de indexado usa `FixedSizeChunking` por defecto.
 - **Sin evaluación automática de calidad RAG**: no hay métricas tipo groundedness/relevancia (ej. RAGAS) sobre las respuestas generadas, solo analítica descriptiva del uso.
 - **Logging sin handler global**: los módulos usan `logging.getLogger(__name__)` pero no hay configuración centralizada de handlers/formato/nivel a nivel de aplicación; en Docker los logs llegan a stdout con el formato por defecto de Python.
+- **Prompt injection no mitigado**: el contenido scrapeado (texto web no confiable) se inyecta directamente en el prompt del LLM como contexto — riesgo de prompt injection conocido y no mitigado en este alcance.
 
 ## Mejoras futuras
 
