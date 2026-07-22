@@ -33,6 +33,21 @@ class GroqLLM(BaseLLM):
         return resp.choices[0].message.content
 
 
+class OpenAILLM(BaseLLM):
+    """Cliente LLM usando OpenAI API."""
+
+    def __init__(self):
+        from openai import OpenAI
+        s = get_settings()
+        self.client = OpenAI(api_key=s.openai_api_key)
+        self.model = s.llm_model
+
+    def chat(self, messages: list[dict]) -> str:
+        """Envía mensajes a OpenAI API."""
+        resp = self.client.chat.completions.create(model=self.model, messages=messages)
+        return resp.choices[0].message.content
+
+
 class OllamaLLM(BaseLLM):
     """Cliente LLM usando Ollama local."""
 
@@ -57,7 +72,7 @@ class OllamaLLM(BaseLLM):
 class LLMFactory:
     """Patrón Factory Method: crea el proveedor LLM según configuración."""
 
-    _providers = {"groq": GroqLLM, "ollama": OllamaLLM}
+    _providers = {"groq": GroqLLM, "openai": OpenAILLM, "ollama": OllamaLLM}
 
     @classmethod
     def create(cls) -> BaseLLM:

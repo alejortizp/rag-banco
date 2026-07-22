@@ -45,7 +45,7 @@ flowchart LR
         L -->|top 3| J
         J <-->|ultimos N mensajes| M["ConversationRepository (SQLite WAL)"]
         J --> N["LLMFactory"]
-        N --> O["Groq / Ollama"]
+        N --> O["Groq / OpenAI / Ollama"]
         O -->|respuesta| J
         J -->|respuesta + fuentes| I
     end
@@ -126,6 +126,18 @@ curl -X DELETE http://localhost:6333/collections/banco_web
 docker compose exec app python -m scripts.run_indexer
 ```
 
+### Alternativa de LLM: OpenAI (API de pago)
+
+`src/rag/llm.py` incluye un `OpenAILLM` seleccionable en `.env`:
+
+```env
+LLM_PROVIDER=openai
+LLM_MODEL=gpt-4o-mini
+OPENAI_API_KEY=sk-xxxxxxxx
+```
+
+No suma puntos frente al default gratuito (la prueba valora herramientas sin costo), pero está disponible vía el mismo Factory para quien ya tenga una key.
+
 ### Alternativa de LLM: Ollama (opción avanzada, no incluida en el compose)
 
 Si no se quiere depender de un servicio externo, `src/rag/llm.py` incluye un `OllamaLLM` seleccionable con:
@@ -162,7 +174,7 @@ La prueba exige al menos 3 patrones documentados; se implementaron 5:
 | Patrón | Dónde | Por qué |
 |---|---|---|
 | **Singleton** | `src/config.py` — `get_settings()` decorado con `@lru_cache` | Una única instancia de `Settings` (variables de entorno) compartida por todo el proceso, evitando releer/parsear el `.env` en cada uso y garantizando consistencia de configuración. |
-| **Factory Method** | `src/rag/llm.py` — `LLMFactory.create()` | Desacopla al pipeline del proveedor concreto de LLM. Cambiar de Groq a Ollama es solo una variable de entorno (`LLM_PROVIDER`); el resto del código consume la interfaz `BaseLLM` sin saber cuál implementación recibió. |
+| **Factory Method** | `src/rag/llm.py` — `LLMFactory.create()` | Desacopla al pipeline del proveedor concreto de LLM. Cambiar entre Groq, OpenAI u Ollama es solo una variable de entorno (`LLM_PROVIDER`); el resto del código consume la interfaz `BaseLLM` sin saber cuál implementación recibió. |
 | **Strategy** | `src/indexing/chunking.py` — `ChunkingStrategy` (`FixedSizeChunking`, `ParagraphChunking`) | El algoritmo de troceo de texto es intercambiable sin tocar el indexer. Permite comparar/ajustar estrategias de chunking (tamaño fijo con overlap vs. por párrafos) sin romper el resto del pipeline. |
 | **Repository** | `src/memory/history.py` — `ConversationRepository` | Aísla el acceso a SQLite (queries, conexión, modo WAL) detrás de una interfaz de dominio (`add_message`, `get_last_n`, `all_messages`). El pipeline y la UI no conocen SQL ni el motor de persistencia subyacente. |
 | **Adapter** | `src/indexing/vector_store.py` — `VectorStore` sobre `QdrantClient` | Expone una interfaz propia (`upsert`, `search`) sobre el cliente concreto de Qdrant, para poder sustituir la vector DB (p. ej. por otra self-hosted) sin tocar el retriever ni el indexer. |
@@ -178,7 +190,7 @@ Todo el stack es gratuito/open source, priorizando ejecución local sin dependen
 | Embeddings | `sentence-transformers`, modelo `paraphrase-multilingual-MiniLM-L12-v2` | Gratuito, corre localmente (sin llamadas a API de pago), y es multilingüe — clave porque el contenido del banco está en español. |
 | Vector DB | Qdrant self-hosted (Docker, `qdrant/qdrant:v1.10.1`) | Open source, corre en el mismo compose, sin costos de un servicio administrado; incluye dashboard web en `/dashboard` para inspección. |
 | Reranker (BONUS) | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Mejora la precisión del top-k final reordenando por relevancia real query-documento, más allá de la similitud de embeddings. |
-| LLM | Groq, `llama-3.1-8b-instant` (free tier) | Free tier generoso, latencia muy baja, sin necesidad de GPU propia. Intercambiable por Ollama local vía Factory Method. |
+| LLM | Groq, `llama-3.1-8b-instant` (free tier) | Free tier generoso, latencia muy baja, sin necesidad de GPU propia. Intercambiable por OpenAI (`gpt-4o-mini`) u Ollama local vía Factory Method. |
 | Historial | SQLite en modo WAL (`conversations.db`) | Cero configuración, persistente en disco (volumen `./data`), soporta concurrencia razonable para una app de un solo proceso Streamlit. |
 | UI | Streamlit | Interfaz conversacional mínima "out of the box" (chat, sidebar, expanders) con muy poco código. |
 | Tests | `pytest` (27 tests) | Estándar de facto en Python; cobertura de chunking, cleaner, config, history, llm, pipeline, retriever y analytics. |
@@ -228,7 +240,7 @@ rag-banco/
 │   │   └── vector_store.py    # VectorStore (Adapter sobre Qdrant)
 │   ├── rag/
 │   │   ├── retriever.py       # Retriever + CrossEncoderReranker
-│   │   ├── llm.py             # BaseLLM, GroqLLM, OllamaLLM, LLMFactory
+│   │   ├── llm.py             # BaseLLM, GroqLLM, OpenAILLM, OllamaLLM, LLMFactory
 │   │   └── pipeline.py        # RAGPipeline (orquesta retrieve + historial + LLM)
 │   ├── memory/
 │   │   └── history.py         # ConversationRepository (Repository, SQLite WAL)
