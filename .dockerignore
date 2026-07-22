@@ -1,4 +1,4 @@
-.git
+.git*
 .superpowers
 data/raw/*
 data/processed/*
@@ -7,3 +7,7 @@ __pycache__
 .venv
 tests/
 *.md
+conversations.db
+conversations.db-wal
+conversations.db-shm
+.pytest_cache
