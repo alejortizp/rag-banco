@@ -181,7 +181,7 @@ Todo el stack es gratuito/open source, priorizando ejecución local sin dependen
 | LLM | Groq, `llama-3.1-8b-instant` (free tier) | Free tier generoso, latencia muy baja, sin necesidad de GPU propia. Intercambiable por Ollama local vía Factory Method. |
 | Historial | SQLite en modo WAL (`conversations.db`) | Cero configuración, persistente en disco (volumen `./data`), soporta concurrencia razonable para una app de un solo proceso Streamlit. |
 | UI | Streamlit | Interfaz conversacional mínima "out of the box" (chat, sidebar, expanders) con muy poco código. |
-| Tests | `pytest` (26 tests) | Estándar de facto en Python; cobertura de chunking, cleaner, config, history, llm, pipeline, retriever y analytics. |
+| Tests | `pytest` (27 tests) | Estándar de facto en Python; cobertura de chunking, cleaner, config, history, llm, pipeline, retriever y analytics. |
 
 ## Análisis de conversaciones (analytics)
 
@@ -234,7 +234,7 @@ rag-banco/
 │   │   └── history.py         # ConversationRepository (Repository, SQLite WAL)
 │   └── analytics/
 │       └── metrics.py         # compute_metrics()
-├── tests/                     # 26 tests (no se incluyen en la imagen Docker)
+├── tests/                     # 27 tests (no se incluyen en la imagen Docker)
 └── data/                      # creado en runtime, montado como volumen ./data
     ├── raw/                   # HTML crudo + index.json
     └── processed/             # documents.jsonl (texto limpio)
@@ -252,7 +252,7 @@ pip install -r requirements.txt
 pytest
 ```
 
-`pytest.ini` fija `pythonpath = .`, así que los tests importan `src` y `scripts` correctamente sin instalar el proyecto como paquete. Cobertura actual: 26 tests sobre chunking, cleaner, config, history, llm, pipeline, retriever y analytics.
+`pytest.ini` fija `pythonpath = .`, así que los tests importan `src` y `scripts` correctamente sin instalar el proyecto como paquete. Cobertura actual: 27 tests sobre chunking, cleaner, config, history, llm, pipeline, retriever y analytics.
 
 ## Limitaciones y supuestos
 
