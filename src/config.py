@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     history_window_n: int = 6
     top_k: int = 8
     rerank_top_k: int = 3
-    scrape_base_url: str = "https://www.bbva.com.co/"
+    scrape_base_url: str = "https://www.bancolombia.com/"
     scrape_max_pages: int = 50
     db_path: str = "conversations.db"
 
