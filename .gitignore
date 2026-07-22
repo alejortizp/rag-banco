@@ -5,5 +5,7 @@ data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 conversations.db
+conversations.db-wal
+conversations.db-shm
 .venv/
 .superpowers/
