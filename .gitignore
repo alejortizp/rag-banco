@@ -1,0 +1,9 @@
+__pycache__/
+.env
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+conversations.db
+.venv/
+.superpowers/

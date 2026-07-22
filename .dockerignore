@@ -1,0 +1,9 @@
+.git
+.superpowers
+data/raw/*
+data/processed/*
+__pycache__
+.env
+.venv
+tests/
+*.md
