@@ -1,0 +1,35 @@
+[project]
+name = "rag-banco"
+version = "1.0.0"
+description = "Sistema RAG con web scraping sobre el sitio de un banco (prueba técnica MLE)"
+requires-python = ">=3.11"
+dependencies = [
+    "requests==2.32.3",
+    "beautifulsoup4==4.12.3",
+    "lxml==5.2.2",
+    "sentence-transformers==3.0.1",
+    "qdrant-client==1.10.1",
+    "groq==0.9.0",
+    "openai==1.35.13",
+    "streamlit==1.36.0",
+    "pydantic-settings==2.3.4",
+    # groq 0.9.0 pasa 'proxies' a httpx; httpx>=0.28 lo eliminó
+    "httpx==0.27.2",
+    "torch>=2.3",
+]
+
+[dependency-groups]
+dev = ["pytest==8.2.2"]
+
+# El proyecto no es un paquete instalable: src/ se importa vía pythonpath (pytest.ini / PYTHONPATH en Docker)
+[tool.uv]
+package = false
+
+# torch solo con wheels CPU (la imagen Docker no tiene GPU y los wheels CUDA pesan varios GB)
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
