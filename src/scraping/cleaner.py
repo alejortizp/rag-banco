@@ -49,7 +49,7 @@ class HtmlCleaner:
                 if len(doc["text"]) > 100:  # descartar páginas vacías
                     docs.append(doc)
             except Exception as e:
-                logger.warning(f"Failed to process {entry['path']}: {e}")
+                logger.warning(f"Failed to process {entry.get('path', '?')}: {e}")
                 continue
         out = PROCESSED_DIR / "documents.jsonl"
         with out.open("w", encoding="utf-8") as f:

@@ -16,6 +16,10 @@ class FailingLLM:
     def chat(self, messages):
         raise RuntimeError("api caida")
 
+class FailingRetriever:
+    def retrieve(self, q):
+        raise RuntimeError("qdrant caido")
+
 def _pipeline(tmp_path, llm):
     return RAGPipeline(FakeRetriever(), llm, ConversationRepository(str(tmp_path / "h.db")))
 
@@ -51,3 +55,9 @@ def test_error_del_llm_no_filtra_detalles_internos(tmp_path):
     p = _pipeline(tmp_path, FailingLLM())
     out = p.answer("s1", "hola")
     assert "api caida" not in out["answer"]  # el detalle interno no llega al usuario
+
+def test_error_del_retriever_degrada_sin_reventar(tmp_path):
+    p = RAGPipeline(FailingRetriever(), FakeLLM(), ConversationRepository(str(tmp_path / "h.db")))
+    out = p.answer("s1", "hola")
+    assert out["answer"] == "respuesta de prueba"  # el LLM respondió con contexto vacío
+    assert out["sources"] == []

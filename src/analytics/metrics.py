@@ -10,6 +10,7 @@ STOPWORDS = {
 def compute_metrics(messages: list[dict]) -> dict:
     sessions = {m["session_id"] for m in messages}
     user_msgs = [m for m in messages if m["role"] == "user"]
+    # dígitos excluidos deliberadamente: es una métrica de términos temáticos, no de identificadores
     words = [w for m in user_msgs for w in re.findall(r"[a-záéíóúüñ]+", m["content"].lower())
              if w not in STOPWORDS and len(w) > 3]
     per_day = Counter(

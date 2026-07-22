@@ -17,7 +17,11 @@ class RAGPipeline:
         self.n = get_settings().history_window_n
 
     def answer(self, session_id: str, question: str) -> dict:
-        hits = self.retriever.retrieve(question)
+        try:
+            hits = self.retriever.retrieve(question)
+        except Exception:
+            logger.exception("Fallo recuperando contexto para session_id=%s", session_id)
+            hits = []
         context = "\n\n".join(f"[{h['title']}]({h['url']})\n{h['text']}" for h in hits)
         previous = self.history.get_last_n(session_id, self.n)
         messages = (
@@ -27,7 +31,7 @@ class RAGPipeline:
         )
         try:
             answer = self.llm.chat(messages)
-        except Exception as e:
+        except Exception:
             logger.exception("Fallo consultando el LLM para session_id=%s", session_id)
             answer = "Lo siento, ocurrió un error consultando el modelo. Por favor intenta de nuevo."
         self.history.add_message(session_id, "user", question)
