@@ -282,6 +282,18 @@ Resultados de la última corrida (sistema bajo prueba: `groq/llama-3.1-8b-instan
 | Context utilization | 0.93 | Los chunks relevantes quedan arriba del contexto tras el reranker |
 | Answer relevancy | 0.78 | Las respuestas atienden la pregunta formulada |
 
+### Experimento A/B: ¿aporta el reranker?
+
+Misma evaluación con `EVAL_RERANKER=0` (los 3 chunks salen del orden vectorial puro, sin cross-encoder):
+
+| Métrica | Con reranker | Sin reranker | Δ |
+|---|---|---|---|
+| Context utilization | **0.93** | 0.86 | **+0.07** |
+| Faithfulness | **0.88** | 0.80 | **+0.08** |
+| Answer relevancy | 0.78 | 0.87 | −0.09 |
+
+Lectura honesta: la métrica que mide directamente la calidad del ordenamiento (context utilization) mejora con el reranker, y las respuestas resultan más fieles al contexto. Answer relevancy baja ligeramente — con n=12 esa diferencia está dentro del ruido estadístico, y puede reflejar que respuestas más ancladas al contexto tienden a ser más cautas. Conclusión: el reranker aporta en su función principal (ordenar el contexto), con una muestra aún pequeña para afirmaciones finas.
+
 Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias metodológicas: muestra pequeña (n=12) y sin *ground truth* anotado — por eso se usan solo métricas que no lo requieren. El juez (`gpt-4o-mini`) es de un proveedor distinto al sistema evaluado, lo que evita el sesgo de auto-preferencia; `EVAL_JUDGE=groq` ofrece una alternativa 100% gratuita (con `answer_relevancy` en modo `strictness=1` porque la API de Groq no soporta `n>1`).
 
 ## Limitaciones y supuestos

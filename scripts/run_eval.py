@@ -76,9 +76,12 @@ def main() -> int:
     # strictness=1 → una sola completion por llamada (la API de Groq no soporta n>1)
     answer_relevancy = AnswerRelevancy(strictness=1)
 
+    # A/B: EVAL_RERANKER=0 evalúa el retrieval SIN reranker (top_k truncado por orden vectorial)
+    use_reranker = os.environ.get("EVAL_RERANKER", "1") != "0"
     questions = json.loads(QUESTIONS_PATH.read_text(encoding="utf-8"))
     embedder = Embedder()
-    retriever = Retriever(embedder, QdrantVectorStore(dim=embedder.dim), CrossEncoderReranker())
+    reranker = CrossEncoderReranker() if use_reranker else None
+    retriever = Retriever(embedder, QdrantVectorStore(dim=embedder.dim), reranker)
     llm = LLMFactory.create()
 
     print(f"Generando respuestas para {len(questions)} preguntas (LLM bajo prueba: {s.llm_provider}/{s.llm_model})...")
@@ -104,6 +107,7 @@ def main() -> int:
     df = scores.to_pandas()
     summary = {
         "llm_bajo_prueba": f"{s.llm_provider}/{s.llm_model}",
+        "reranker": use_reranker,
         "juez": f"{judge_name}/{judge['model']}",
         "n_preguntas": len(questions),
         "faithfulness": round(float(df["faithfulness"].mean()), 3),
@@ -111,16 +115,17 @@ def main() -> int:
         "context_utilization": round(float(df["context_utilization"].mean()), 3),
     }
 
+    results_path = RESULTS_PATH if use_reranker else Path("data/eval_results_sin_reranker.json")
     RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
     detail = df[["question", "faithfulness", "answer_relevancy", "context_utilization"]].to_dict(orient="records")
-    RESULTS_PATH.write_text(
+    results_path.write_text(
         json.dumps({"resumen": summary, "detalle": detail}, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
     print("\n=== Resumen ===")
     print(json.dumps(summary, indent=2, ensure_ascii=False))
-    print(f"\nDetalle por pregunta guardado en {RESULTS_PATH}")
+    print(f"\nDetalle por pregunta guardado en {results_path}")
     return 0
 
 
