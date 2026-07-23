@@ -1,0 +1,313 @@
+{
+  "resumen": {
+    "llm_bajo_prueba": "groq/llama-3.1-8b-instant",
+    "reranker": true,
+    "juez": "openai/gpt-4o-mini",
+    "n_preguntas": 50,
+    "faithfulness": 0.868,
+    "answer_relevancy": 0.761,
+    "context_utilization": 0.91
+  },
+  "detalle": [
+    {
+      "question": "¿Qué tarjetas de crédito ofrece el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7924111127748583,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué opciones tengo para ahorrar en el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8430982219999386,
+      "context_utilization": 0.8333333332916666
+    },
+    {
+      "question": "¿Cómo puedo abrir una cuenta de ahorros?",
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.9063759147798325,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué tipos de crédito o préstamo ofrece el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9472983519050341,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿El banco ofrece créditos de vivienda o hipotecarios?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7515147712709136,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué seguros puedo adquirir con el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9272440363965637,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué canales digitales tiene el banco para hacer transacciones?",
+      "faithfulness": NaN,
+      "answer_relevancy": 0.6471268737965122,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué beneficios tiene la tarjeta débito?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7431017044281124,
+      "context_utilization": 0.5833333333041666
+    },
+    {
+      "question": "¿Qué opciones de inversión ofrece el banco?",
+      "faithfulness": NaN,
+      "answer_relevancy": 0.7134589363664585,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Cómo me comunico con el banco o dónde encuentro atención al cliente?",
+      "faithfulness": 0.4,
+      "answer_relevancy": 0.9125932484067785,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué productos ofrece el banco para empresas o negocios?",
+      "faithfulness": 0.9166666666666666,
+      "answer_relevancy": 0.975627161015405,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué debo hacer si quiero solicitar un producto del banco en línea?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9430187884464066,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué es la app Mi Bancolombia y qué puedo hacer con ella?",
+      "faithfulness": 0.8571428571428571,
+      "answer_relevancy": 0.6970662810372229,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué pasó con la cuenta A la mano?",
+      "faithfulness": 0.8,
+      "answer_relevancy": 0.6492123479727037,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué es Nequi?",
+      "faithfulness": 0.75,
+      "answer_relevancy": 0.9999999999999998,
+      "context_utilization": 0.8333333332916666
+    },
+    {
+      "question": "¿Qué servicios ofrece la Banca Privada?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.866567374016286,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué opciones tiene el banco para colombianos que viven en el exterior?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8613310220831937,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿El banco tiene productos para jóvenes?",
+      "faithfulness": 0.6666666666666666,
+      "answer_relevancy": 0.9999999999999998,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué es Banconautas?",
+      "faithfulness": 0.625,
+      "answer_relevancy": 0.4961920127769706,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Qué beneficios ofrece el banco a sus clientes?",
+      "faithfulness": 0.6363636363636364,
+      "answer_relevancy": 0.6928465548387859,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué puedo hacer en un cajero automático del banco?",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.8865268032180981,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué son los cajeros multifuncionales y para qué sirven?",
+      "faithfulness": 0.9090909090909091,
+      "answer_relevancy": 0.5042370040041176,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Puedo comprar o vender divisas con el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9364506291919648,
+      "context_utilization": 0.8333333332916666
+    },
+    {
+      "question": "¿Qué es un corresponsal bancario y qué trámites puedo hacer allí?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9416866118284325,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Cómo puedo enviar giros dentro de Colombia o al exterior?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8925442588755799,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué es el leasing y qué opciones de leasing ofrece el banco para personas?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.6906341470581401,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Cómo funciona PSE para hacer pagos por internet?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8777414078261861,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Qué alternativas tengo si no puedo pagar mi crédito y quiero negociar mi deuda?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8354598299180778,
+      "context_utilization": 0.8333333332916666
+    },
+    {
+      "question": "¿Qué opciones de pago facilita el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9329717008468821,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué es el factoring y para qué tipo de empresas sirve?",
+      "faithfulness": 0.7647058823529411,
+      "answer_relevancy": 0.7900272233914494,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Qué recursos de educación financiera ofrece el banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 1.0000000000000002,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Qué es La Casa de la Plata?",
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.8431670147613115,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Qué opciones tengo para financiar un vehículo?",
+      "faithfulness": 0.9375,
+      "answer_relevancy": 0.7989297126078372,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué es Tu360?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.6608555166303264,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Puedo comprar activos usados a través del banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.88574266499337,
+      "context_utilization": 0.9999999999
+    },
+    {
+      "question": "¿Cómo recargo la tarjeta Cívica con el banco?",
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.0,
+      "context_utilization": 0.0
+    },
+    {
+      "question": "¿Cómo pido un extracto bancario por la página web?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9191015703324702,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué certificados puedo solicitar por la página web del banco?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8640113545473663,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué trámites digitales puedo hacer sin ir a una sucursal?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.634138185516328,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué es la Sucursal Telefónica y qué puedo hacer llamando?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5681023457642336,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué es la Sucursal Virtual Personas?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8264412016095446,
+      "context_utilization": 0.5833333333041666
+    },
+    {
+      "question": "¿Cómo encuentro una sucursal física del banco?",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.903919335519319,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué es el cliente preferencial y qué ventajas tiene?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5408722875801147,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿El banco tiene una oferta especial para clientes independientes?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8479788079859255,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué productos ofrece el banco para la familia?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5580458906622564,
+      "context_utilization": 0.99999999995
+    },
+    {
+      "question": "¿Qué beneficios tiene el banco relacionados con el fútbol?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.0,
+      "context_utilization": 0.0
+    },
+    {
+      "question": "¿Qué información encuentro en el Centro de Ayuda?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8748586606544622,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿Qué derechos tengo como consumidor financiero?",
+      "faithfulness": 0.9166666666666666,
+      "answer_relevancy": 0.810730308308857,
+      "context_utilization": 0.9999999999666667
+    },
+    {
+      "question": "¿El banco ofrece créditos para pymes?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.0,
+      "context_utilization": 0.0
+    },
+    {
+      "question": "¿Cómo funciona el crédito de vehículo del banco y qué necesito para solicitarlo?",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8645024258312551,
+      "context_utilization": 0.9999999999666667
+    }
+  ]
+}
