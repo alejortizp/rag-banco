@@ -266,7 +266,7 @@ uv run pytest
 
 ## Evaluación de calidad RAG (RAGAS)
 
-El proyecto incluye una evaluación offline con [RAGAS](https://docs.ragas.io/) sobre 12 preguntas representativas (`scripts/eval_questions.json`), usando la técnica LLM-as-judge. Las dependencias viven en el grupo `eval` de uv y **no entran a la imagen Docker**.
+El proyecto incluye una evaluación offline con [RAGAS](https://docs.ragas.io/) sobre 50 preguntas ancladas al contenido indexado (`scripts/eval_questions.json`), usando la técnica LLM-as-judge. Las dependencias viven en el grupo `eval` de uv y **no entran a la imagen Docker**.
 
 ```bash
 uv sync --group eval
@@ -274,27 +274,27 @@ EVAL_JUDGE=groq uv run --group eval python -m scripts.run_eval    # juez gratuit
 # EVAL_JUDGE=openai usa gpt-4o-mini como juez (requiere crédito en OPENAI_API_KEY)
 ```
 
-Resultados de la última corrida (sistema bajo prueba: `groq/llama-3.1-8b-instant` + reranker; juez independiente: `openai/gpt-4o-mini`; embeddings locales para las métricas):
+Resultados de la última corrida sobre **50 preguntas** ancladas al contenido indexado (sistema bajo prueba: `groq/llama-3.1-8b-instant` + reranker; juez independiente: `openai/gpt-4o-mini`; embeddings locales para las métricas):
 
 | Métrica | Valor | Interpretación |
 |---|---|---|
-| Faithfulness | 0.88 | La gran mayoría de las afirmaciones de las respuestas se sostienen en el contexto recuperado |
-| Context utilization | 0.93 | Los chunks relevantes quedan arriba del contexto tras el reranker |
-| Answer relevancy | 0.78 | Las respuestas atienden la pregunta formulada |
+| Faithfulness | 0.87 | La gran mayoría de las afirmaciones de las respuestas se sostienen en el contexto recuperado |
+| Context utilization | 0.91 | Los chunks relevantes quedan arriba del contexto tras el reranker |
+| Answer relevancy | 0.76 | Las respuestas atienden la pregunta formulada |
 
 ### Experimento A/B: ¿aporta el reranker?
 
-Misma evaluación con `EVAL_RERANKER=0` (los 3 chunks salen del orden vectorial puro, sin cross-encoder):
+Misma evaluación (n=50) con `EVAL_RERANKER=0` (los 3 chunks salen del orden vectorial puro, sin cross-encoder):
 
 | Métrica | Con reranker | Sin reranker | Δ |
 |---|---|---|---|
-| Context utilization | **0.93** | 0.86 | **+0.07** |
-| Faithfulness | **0.88** | 0.80 | **+0.08** |
-| Answer relevancy | 0.78 | 0.87 | −0.09 |
+| Context utilization | **0.91** | 0.83 | **+0.08** |
+| Faithfulness | **0.87** | 0.85 | +0.02 |
+| Answer relevancy | **0.76** | 0.75 | +0.01 |
 
-Lectura honesta: la métrica que mide directamente la calidad del ordenamiento (context utilization) mejora con el reranker, y las respuestas resultan más fieles al contexto. Answer relevancy baja ligeramente — con n=12 esa diferencia está dentro del ruido estadístico, y puede reflejar que respuestas más ancladas al contexto tienden a ser más cautas. Conclusión: el reranker aporta en su función principal (ordenar el contexto), con una muestra aún pequeña para afirmaciones finas.
+Con n=50 las tres métricas favorecen al reranker. El efecto grande y consistente está donde debe: context utilization (+8pp), la métrica que mide directamente la calidad del ordenamiento del contexto. Nota metodológica: una corrida previa con n=12 mostraba answer_relevancy *en contra* del reranker (−0.09); al quintuplicar la muestra esa diferencia desapareció — ilustración práctica de por qué las métricas LLM-as-judge necesitan muestras suficientes antes de sacar conclusiones.
 
-Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias metodológicas: muestra pequeña (n=12) y sin *ground truth* anotado — por eso se usan solo métricas que no lo requieren. El juez (`gpt-4o-mini`) es de un proveedor distinto al sistema evaluado, lo que evita el sesgo de auto-preferencia; `EVAL_JUDGE=groq` ofrece una alternativa 100% gratuita (con `answer_relevancy` en modo `strictness=1` porque la API de Groq no soporta `n>1`).
+Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias metodológicas: sin *ground truth* anotado — por eso se usan solo métricas que no lo requieren. El juez (`gpt-4o-mini`) es de un proveedor distinto al sistema evaluado, lo que evita el sesgo de auto-preferencia; `EVAL_JUDGE=groq` ofrece una alternativa 100% gratuita (con `answer_relevancy` en modo `strictness=1` porque la API de Groq no soporta `n>1`).
 
 ## Limitaciones y supuestos
 

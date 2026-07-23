@@ -100,8 +100,8 @@ def main() -> int:
         llm=ChatOpenAI(model=judge["model"], api_key=judge_key, base_url=judge["base_url"], temperature=0),
         # Embeddings locales (answer_relevancy): sin dependencia de cuota de APIs
         embeddings=HuggingFaceEmbeddings(model_name=s.embedding_model),
-        # max_workers bajo: respeta los rate limits del free tier del juez
-        run_config=RunConfig(max_workers=1, max_retries=10, timeout=120),
+        # Concurrencia según el juez: OpenAI (pago) tolera paralelismo; el free tier de Groq no
+        run_config=RunConfig(max_workers=4 if judge_name == "openai" else 1, max_retries=10, timeout=120),
     )
 
     df = scores.to_pandas()
