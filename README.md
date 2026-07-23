@@ -264,6 +264,26 @@ uv run pytest
 
 `pytest.ini` fija `pythonpath = .`, así que los tests importan `src` y `scripts` correctamente sin instalar el proyecto como paquete. Cobertura actual: 27 tests sobre chunking, cleaner, config, history, llm, pipeline, retriever y analytics.
 
+## Evaluación de calidad RAG (RAGAS)
+
+El proyecto incluye una evaluación offline con [RAGAS](https://docs.ragas.io/) sobre 12 preguntas representativas (`scripts/eval_questions.json`), usando la técnica LLM-as-judge. Las dependencias viven en el grupo `eval` de uv y **no entran a la imagen Docker**.
+
+```bash
+uv sync --group eval
+EVAL_JUDGE=groq uv run --group eval python -m scripts.run_eval    # juez gratuito (llama-3.3-70b)
+# EVAL_JUDGE=openai usa gpt-4o-mini como juez (requiere crédito en OPENAI_API_KEY)
+```
+
+Resultados de la última corrida (sistema bajo prueba: `groq/llama-3.1-8b-instant` + reranker; juez: `groq/llama-3.3-70b-versatile`; embeddings locales para las métricas):
+
+| Métrica | Valor | Interpretación |
+|---|---|---|
+| Faithfulness | 0.77 | La mayoría de las afirmaciones de las respuestas se sostienen en el contexto recuperado |
+| Context utilization | 0.75 | Los chunks relevantes tienden a quedar arriba tras el reranker |
+| Answer relevancy | pendiente | La corrida agotó el límite diario de tokens del free tier de Groq antes de completar esta métrica |
+
+Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias metodológicas: el juez comparte proveedor con el sistema bajo prueba (aunque es un modelo más grande y distinto), la muestra es pequeña (n=12) y no hay *ground truth* anotado — por eso se usan solo métricas que no lo requieren. Con crédito de OpenAI, `EVAL_JUDGE=openai` da un juez independiente del proveedor evaluado.
+
 ## Limitaciones y supuestos
 
 - **Sitio scrapeado**: se usa Bancolombia por defecto porque BBVA Colombia bloquea el crawling en `robots.txt` (ver [supuesto](#supuesto-sobre-el-sitio-del-banco)). `SCRAPE_BASE_URL` es configurable a cualquier otro dominio.
