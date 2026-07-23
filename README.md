@@ -274,15 +274,15 @@ EVAL_JUDGE=groq uv run --group eval python -m scripts.run_eval    # juez gratuit
 # EVAL_JUDGE=openai usa gpt-4o-mini como juez (requiere crédito en OPENAI_API_KEY)
 ```
 
-Resultados de la última corrida (sistema bajo prueba: `groq/llama-3.1-8b-instant` + reranker; juez: `groq/llama-3.3-70b-versatile`; embeddings locales para las métricas):
+Resultados de la última corrida (sistema bajo prueba: `groq/llama-3.1-8b-instant` + reranker; juez independiente: `openai/gpt-4o-mini`; embeddings locales para las métricas):
 
 | Métrica | Valor | Interpretación |
 |---|---|---|
-| Faithfulness | 0.77 | La mayoría de las afirmaciones de las respuestas se sostienen en el contexto recuperado |
-| Context utilization | 0.75 | Los chunks relevantes tienden a quedar arriba tras el reranker |
-| Answer relevancy | pendiente | La corrida agotó el límite diario de tokens del free tier de Groq antes de completar esta métrica |
+| Faithfulness | 0.88 | La gran mayoría de las afirmaciones de las respuestas se sostienen en el contexto recuperado |
+| Context utilization | 0.93 | Los chunks relevantes quedan arriba del contexto tras el reranker |
+| Answer relevancy | 0.78 | Las respuestas atienden la pregunta formulada |
 
-Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias metodológicas: el juez comparte proveedor con el sistema bajo prueba (aunque es un modelo más grande y distinto), la muestra es pequeña (n=12) y no hay *ground truth* anotado — por eso se usan solo métricas que no lo requieren. Con crédito de OpenAI, `EVAL_JUDGE=openai` da un juez independiente del proveedor evaluado.
+Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias metodológicas: muestra pequeña (n=12) y sin *ground truth* anotado — por eso se usan solo métricas que no lo requieren. El juez (`gpt-4o-mini`) es de un proveedor distinto al sistema evaluado, lo que evita el sesgo de auto-preferencia; `EVAL_JUDGE=groq` ofrece una alternativa 100% gratuita (con `answer_relevancy` en modo `strictness=1` porque la API de Groq no soporta `n>1`).
 
 ## Limitaciones y supuestos
 
