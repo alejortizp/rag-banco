@@ -20,6 +20,12 @@ dependencies = [
 
 [dependency-groups]
 dev = ["pytest==8.2.2"]
+# Evaluación RAGAS (offline, no entra a la imagen Docker): gpt-4o-mini como LLM juez
+eval = [
+    "ragas==0.1.21",
+    "langchain-openai==0.1.17",
+    "datasets>=2.19",
+]
 
 # El proyecto no es un paquete instalable: src/ se importa vía pythonpath (pytest.ini / PYTHONPATH en Docker)
 [tool.uv]
