@@ -31,15 +31,28 @@ JUDGES = {
 }
 
 
-def build_answer(retriever, llm, question: str) -> dict:
-    """Replica la generación del RAGPipeline sin escribir en el historial de conversaciones."""
+def build_answer(retriever, llm, question: str, retries: int = 5, wait_s: int = 25) -> dict:
+    """Replica la generación del RAGPipeline sin escribir en el historial de conversaciones.
+
+    Reintenta con espera ante rate limits (el free tier de Groq permite 6k tokens/min
+    y cada pregunta con contexto consume ~3.5k).
+    """
+    import time
+
     hits = retriever.retrieve(question)
     context = "\n\n".join(f"[{h['title']}]({h['url']})\n{h['text']}" for h in hits)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": f"Contexto:\n{context}\n\nPregunta: {question}"},
     ]
-    return {"answer": llm.chat(messages), "contexts": [h["text"] for h in hits]}
+    for attempt in range(retries):
+        try:
+            return {"answer": llm.chat(messages), "contexts": [h["text"] for h in hits]}
+        except Exception as exc:
+            if attempt == retries - 1:
+                raise
+            print(f"    rate limit/transitorio ({type(exc).__name__}); reintento en {wait_s}s...")
+            time.sleep(wait_s)
 
 
 def main() -> int:
