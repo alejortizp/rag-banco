@@ -11,3 +11,21 @@ def test_sesiones_aisladas(tmp_path):
     repo = ConversationRepository(db_path=str(tmp_path / "t.db"))
     repo.add_message("a", "user", "hola")
     assert repo.get_last_n("b", n=5) == []
+
+
+def test_list_sessions_ordena_por_actividad_reciente(tmp_path):
+    repo = ConversationRepository(db_path=str(tmp_path / "t.db"))
+    repo.add_message("vieja", "user", "hola")
+    repo.add_message("activa", "user", "hola")
+    repo.add_message("activa", "assistant", "respuesta")
+    repo.add_message("vieja", "user", "otra mas")  # 'vieja' vuelve a ser la mas reciente
+    sessions = repo.list_sessions()
+    assert [s["session_id"] for s in sessions] == ["vieja", "activa"]
+    assert sessions[0]["message_count"] == 2
+    assert sessions[1]["message_count"] == 2
+    assert sessions[0]["last_activity"] >= sessions[1]["last_activity"]
+
+
+def test_list_sessions_sin_datos_devuelve_vacio(tmp_path):
+    repo = ConversationRepository(db_path=str(tmp_path / "t.db"))
+    assert repo.list_sessions() == []

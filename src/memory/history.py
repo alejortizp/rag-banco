@@ -32,6 +32,18 @@ class ConversationRepository:
         return [{"session_id": session_id, "role": r, "content": co, "created_at": t}
                 for r, co, t in reversed(rows)]
 
+    def list_sessions(self) -> list[dict]:
+        """Sesiones existentes con conteo de mensajes, de la más recientemente activa a la menos.
+
+        Ordena por MAX(id) (autoincrement) y no por timestamp: es estrictamente
+        creciente aunque dos mensajes compartan el mismo instante.
+        """
+        with closing(self._conn()) as conn, conn:
+            rows = conn.execute(
+                """SELECT session_id, COUNT(*), MAX(created_at)
+                   FROM messages GROUP BY session_id ORDER BY MAX(id) DESC""").fetchall()
+        return [{"session_id": s, "message_count": n, "last_activity": t} for s, n, t in rows]
+
     def all_messages(self) -> list[dict]:
         with closing(self._conn()) as conn, conn:
             rows = conn.execute("SELECT session_id, role, content, created_at FROM messages ORDER BY id").fetchall()
