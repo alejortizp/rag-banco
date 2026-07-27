@@ -165,6 +165,7 @@ La UI (`src/app.py`) es un chat minimalista en Streamlit:
 - **ID de sesión** (sidebar, campo de texto, valor por defecto `default`): identifica el hilo de conversación. Cada sesión tiene historial propio, persistido en SQLite.
 - **➕ Nueva sesión** (sidebar): crea una sesión con ID basado en la fecha/hora y cambia a ella con el chat vacío.
 - **Sesiones anteriores** (sidebar): lista todas las sesiones existentes con su número de mensajes, ordenadas por actividad reciente; un clic cambia a esa sesión y recarga su historial. La sesión activa aparece marcada con ▶.
+- **Eliminar sesión** (🗑 junto a cada sesión): abre una confirmación con el nombre y número de mensajes antes de borrar definitivamente; si se elimina la sesión activa, la interfaz vuelve a `default`.
 - **Chat**: campo de entrada al final de la página; el historial visible se recarga desde la base de datos (`get_last_n(session_id, n=50)`) en cada refresco.
 - **Fuentes**: cada respuesta del asistente incluye un expander "Fuentes" con las URLs del sitio del banco usadas como contexto (deduplicadas, en el orden en que aportaron al ranking).
 - **Historial enviado al LLM**: no se manda el hilo completo, sino los últimos `HISTORY_WINDOW_N` mensajes (por defecto `6`, configurable en `.env`), para acotar tokens y costo por request.

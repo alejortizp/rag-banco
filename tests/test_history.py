@@ -29,3 +29,20 @@ def test_list_sessions_ordena_por_actividad_reciente(tmp_path):
 def test_list_sessions_sin_datos_devuelve_vacio(tmp_path):
     repo = ConversationRepository(db_path=str(tmp_path / "t.db"))
     assert repo.list_sessions() == []
+
+
+def test_delete_session_elimina_solo_esa_sesion(tmp_path):
+    repo = ConversationRepository(db_path=str(tmp_path / "t.db"))
+    repo.add_message("borrar", "user", "hola")
+    repo.add_message("borrar", "assistant", "respuesta")
+    repo.add_message("conservar", "user", "hola")
+    repo.delete_session("borrar")
+    assert repo.get_last_n("borrar", 10) == []
+    assert len(repo.get_last_n("conservar", 10)) == 1
+    assert [s["session_id"] for s in repo.list_sessions()] == ["conservar"]
+
+
+def test_delete_session_inexistente_no_falla(tmp_path):
+    repo = ConversationRepository(db_path=str(tmp_path / "t.db"))
+    repo.delete_session("no-existe")  # no debe lanzar
+    assert repo.list_sessions() == []

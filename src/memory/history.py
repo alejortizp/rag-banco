@@ -44,6 +44,11 @@ class ConversationRepository:
                    FROM messages GROUP BY session_id ORDER BY MAX(id) DESC""").fetchall()
         return [{"session_id": s, "message_count": n, "last_activity": t} for s, n, t in rows]
 
+    def delete_session(self, session_id: str) -> None:
+        """Elimina todos los mensajes de una sesión (no-op si no existe)."""
+        with closing(self._conn()) as conn, conn:
+            conn.execute("DELETE FROM messages WHERE session_id=?", (session_id,))
+
     def all_messages(self) -> list[dict]:
         with closing(self._conn()) as conn, conn:
             rows = conn.execute("SELECT session_id, role, content, created_at FROM messages ORDER BY id").fetchall()

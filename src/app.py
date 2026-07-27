@@ -30,6 +30,12 @@ def _cambiar_sesion(sid: str) -> None:
     st.session_state.session_id = sid
 
 
+def _eliminar_sesion(sid: str) -> None:
+    get_pipeline().history.delete_session(sid)
+    if st.session_state.session_id == sid:
+        st.session_state.session_id = "default"
+
+
 st.sidebar.text_input("ID de sesión", key="session_id")
 st.sidebar.button(
     "➕ Nueva sesión",
@@ -45,7 +51,8 @@ if sesiones:
     for ses in sesiones:
         sid = ses["session_id"]
         activa = sid == st.session_state.session_id
-        st.sidebar.button(
+        col_sesion, col_borrar = st.sidebar.columns([4, 1])
+        col_sesion.button(
             f"{'▶ ' if activa else ''}{sid} · {ses['message_count']} msjs",
             key=f"ses-{sid}",
             on_click=_cambiar_sesion,
@@ -53,6 +60,15 @@ if sesiones:
             disabled=activa,
             use_container_width=True,
         )
+        with col_borrar.popover("🗑", use_container_width=True):
+            st.caption(f"¿Eliminar «{sid}» y sus {ses['message_count']} mensajes?")
+            st.button(
+                "Eliminar definitivamente",
+                key=f"del-{sid}",
+                on_click=_eliminar_sesion,
+                args=(sid,),
+                type="primary",
+            )
 
 session_id = st.session_state.session_id
 
