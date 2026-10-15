@@ -1,4 +1,4 @@
-# Sistema RAG con Web Scraping — Evaluación RAGAS
+# Sistema RAG con Web Scraping y Evaluación RAGAS
 
 Asistente conversacional que responde preguntas sobre el sitio web público de un banco, usando un pipeline RAG (Retrieval-Augmented Generation) construido enteramente sobre herramientas gratuitas / open source: scraping propio, embeddings locales, Qdrant como vector DB, Groq como LLM (free tier) e interfaz en Streamlit.
 
@@ -60,7 +60,7 @@ Servicios en Docker Compose (`docker-compose.yml`):
 
 ## Supuesto sobre el sitio del banco
 
-Se verificó que **BBVA Colombia (`https://www.bbva.com.co/`) prohíbe explícitamente el crawling en su `robots.txt`**. Por eso este proyecto usa por defecto un sitio que sí lo permite:
+El crawler respeta `robots.txt`: antes de elegir el sitio se verificó que algunos bancos, como **BBVA Colombia (`https://www.bbva.com.co/`)**, prohíben explícitamente el crawling. Por eso este proyecto usa por defecto un sitio que sí lo permite:
 
 ```
 SCRAPE_BASE_URL=https://www.bancolombia.com/
@@ -136,7 +136,7 @@ LLM_MODEL=gpt-4o-mini
 OPENAI_API_KEY=sk-xxxxxxxx
 ```
 
-No suma puntos frente al default gratuito (el default es gratuito), pero está disponible vía el mismo Factory para quien ya tenga una key.
+El default sigue siendo gratuito (Groq free tier), pero esta opción está disponible vía el mismo Factory para quien ya tenga una key.
 
 ### Alternativa de LLM: Ollama (opción avanzada, no incluida en el compose)
 
@@ -307,7 +307,7 @@ Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias
 - **Reindexado no idempotente**: los IDs de punto son `uuid4()` no deterministas, así que volver a correr `run_indexer` sin borrar la colección duplica los chunks (ver workaround con `curl -X DELETE` más arriba).
 - **Dependencia de un servicio externo para el LLM**: con `LLM_PROVIDER=groq`, si Groq no está disponible o la API key es inválida/está vacía, el chat responde con un mensaje de error genérico (no falla la app, pero no hay respuesta generada).
 - **`ParagraphChunking` no está en uso**: existe como estrategia alternativa (patrón Strategy) pero el pipeline de indexado usa `FixedSizeChunking` por defecto.
-- **Sin evaluación automática de calidad RAG**: no hay métricas tipo groundedness/relevancia (ej. RAGAS) sobre las respuestas generadas, solo analítica descriptiva del uso.
+- **Evaluación offline, no continua**: la evaluación RAGAS se corre a demanda sobre un set fijo de 50 preguntas; no hay monitoreo de calidad sobre el tráfico real.
 - **Logging sin handler global**: los módulos usan `logging.getLogger(__name__)` pero no hay configuración centralizada de handlers/formato/nivel a nivel de aplicación; en Docker los logs llegan a stdout con el formato por defecto de Python.
 - **Prompt injection no mitigado**: el contenido scrapeado (texto web no confiable) se inyecta directamente en el prompt del LLM como contexto — riesgo de prompt injection conocido y no mitigado en este alcance.
 
@@ -315,7 +315,7 @@ Detalle por pregunta en `data/eval_results.json` tras cada corrida. Advertencias
 
 - Scraping incremental y programado (solo páginas nuevas/modificadas, en vez de recorrer todo el dominio cada vez).
 - IDs de chunk deterministas (hash de `url` + posición) para que `run_indexer` sea idempotente sin necesidad de borrar la colección.
-- Evaluación automática de calidad RAG (p. ej. RAGAS: faithfulness, context precision/recall).
+- Evaluación RAGAS continua en CI y ampliar el set de preguntas (context precision/recall con ground truth).
 - Streaming de tokens en la respuesta del LLM en la UI, en vez de esperar la respuesta completa.
 - Autenticación/API key en Qdrant, incluso para el entorno de desarrollo.
 - Panel visual de las métricas de `run_analytics` (dashboard en vez de JSON por stdout).
